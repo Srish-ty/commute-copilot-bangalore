@@ -1,4 +1,14 @@
 
 .env
+.env.local
+.venv/
 
 __pycache__/
+*.pyc
+
+CommuteCopilot/agentcore/.cache/
+CommuteCopilot/agentcore/.env.local
+CommuteCopilot/agentcore/.cli/logs/
+CommuteCopilot/agentcore/cdk/cdk.out/
+CommuteCopilot/agentcore/cdk/node_modules/
+CommuteCopilot/agentcore/cdk/.package-lock.json
