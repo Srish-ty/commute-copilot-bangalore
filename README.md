@@ -1,178 +1,148 @@
 # Commute-Copilot Bengaluru
 
-AI-powered multi-agent commute intelligence for Bengaluru, built for AWS UG Bengaluru HackNight.
+Hackathon MVP for AWS UG Bengaluru HackNight: a multi-agent commute intelligence system that returns a clear recommendation with evidence, risks, alternatives, and confidence.
 
-## Problem Statement
+## What This Project Is
 
-### Commute Intelligence
+- No custom frontend
+- No normal backend server
+- No EC2
+- Multi-agent orchestration using `LangGraph`
+- Bedrock model calls via `LangChain` (`langchain-aws`)
+- Elasticsearch Serverless for structured + semantic context retrieval
 
-Every Bengaluru morning is the same calculation: traffic, BMTC, Metro, parking, weather, school timings, route choice, mode choice, and departure time.
-CommuteCopilot Bengaluru answers it with transparent reasoning grounded in real feeds, curated local context, and Elasticsearch retrieval.
-Example:
+## Runtime Architecture
 
-> Leave in 18 minutes, take Metro to MG Road, walk the last kilometre. Here is why.
-
-## What This MVP Builds
-
-CommuteCopilot Bengaluru is a hackathon-ready multi-agent system. It recommends:
-
-- when to leave, which mode to use
-- which route to prefer, how confident the recommendation is
-- what risks matter, what alternatives exist
-
-## Final Architecture
-
-```mermaid
-flowchart TD
-    User["User Query"] --> Supervisor["CommuteCopilot Supervisor Agent"]
-
-    Supervisor --> Weather["Weather Agent"]
-    Supervisor --> RouteTraffic["Route + Traffic Agent"]
-    Supervisor --> Transit["Transit Context Agent"]
-
-    Weather --> OpenMeteo["Open-Meteo API or fallback data"]
-    RouteTraffic --> OSRM["OSRM / OpenStreetMap or fallback routes"]
-    RouteTraffic --> Elastic["Elasticsearch on Elastic Cloud Serverless"]
-    Transit --> Elastic
-
-    Sources["Crawler + curated Bengaluru data"] --> Ingestion["Python ingestion scripts"]
-    Ingestion --> Jina["Jina Embeddings v5 text small"]
-    Jina --> Elastic
-
-    Supervisor --> Decision["Final commute recommendation"]
-    Decision --> Logs["commute_decision_logs"]
-    Logs --> Elastic
-    Elastic --> Kibana["Kibana dashboard"]
+```text
+User Query
+  -> LangGraph flow
+     -> Weather Agent
+     -> Route + Traffic Agent
+     -> Transit Context Agent
+     -> Supervisor Agent decision
+  -> Log final decision to Elasticsearch
+  -> Visualize in Kibana
 ```
 
-## Low-Level Flow
+## Code Layout
 
-```txt
-User asks a commute question
-  -> Supervisor extracts source, destination, time, and preferences
-  -> Supervisor calls Weather Agent
-  -> Supervisor calls Route + Traffic Agent
-  -> Supervisor calls Transit Context Agent
-  -> Specialists retrieve structured and contextual evidence
-  -> Supervisor compares evidence and chooses the most predictable option
-  -> Final decision is logged to Elasticsearch
-  -> Kibana shows indexed data and decision logs
-```
-
-## Tech Stack
-
-- Elastic Agent Builder for agent development and demo chat
-- Amazon Bedrock for LLM reasoning
-- Claude 3.5 Sonnet for Supervisor and Route + Traffic Agents
-- Amazon Nova Lite or Claude Haiku for Weather and Transit Context Agents
-- Elasticsearch on Elastic Cloud Serverless for structured and vector search
-- Kibana for dashboard and demo storytelling
-- Jina Embeddings v5 text small for semantic contextual retrieval
-- Python 3.11 for tools, crawling, embeddings, and ingestion
-
-## Repository Structure
-
-```txt
+```text
 commute-copilot-bangalore/
-├── README.md
-├── .env.example
-├── requirements.txt
-├── ingestion/
-│   ├── ingest_sample_data.py
-│   ├── crawl_sources.py
-│   ├── generate_embeddings.py
-│   └── sample_data/
-├── elastic/
-│   ├── create_indices.py
-│   ├── mappings/
-│   └── queries/
-├── tools/
-├── agents/
-└── docs/
+  main.py                     # CLI entrypoint (runs full agent graph)
+  orchestration_graph.py      # LangGraph workflow
+  llm_provider.py             # LangChain Bedrock wrapper
+  check_stack.py              # Elastic + Bedrock health check
+  agents/*.py                 # executable agents
+  agents/*.md                 # Agent Builder prompt docs
+  tools/*.py                  # weather/route/traffic/transit/elastic/log tools
+  ingestion/*.py              # crawl/embed/ingest scripts
+  elastic/*.py,json,esql      # index creation + mappings + query templates
 ```
 
-## Elasticsearch Indices
+## Python
 
-- `commute_context`: unstructured commute notes, advisories, events, and local context with dense vectors
-- `commute_places`: metro stations, hotspots, parking zones, and locality context
-- `commute_routes`: sample and API-derived route alternatives with reliability fields and dense vectors
-- `commute_decision_logs`: final Supervisor decisions for transparency and dashboarding
+Recommended: Python `3.11`.  
+Currently tested here on `3.10.7` using `py`.
 
-Embeddings are used only for semantic/contextual retrieval. Exact ETA, weather, and route duration should come from structured fields or APIs.
+If `python` is not recognized but `py` works:
 
-## Setup
+```powershell
+Set-Alias python py
+```
 
-1. Create a Python environment.
+To make it permanent:
+
+```powershell
+if (-not (Test-Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force | Out-Null }
+Add-Content -Path $PROFILE -Value "Set-Alias python py"
+```
+
+## Environment Variables
+
+Create `.env` from `.env.example` and fill:
+
+- `ELASTICSEARCH_URL`
+- `ELASTICSEARCH_API_KEY`
+- `JINA_API_KEY` (optional; fallback embeddings exist)
+- `JINA_EMBEDDING_MODEL=jina-embeddings-v5-text-small`
+- `AWS_REGION`
+- `BEDROCK_SUPERVISOR_MODEL`
+- `BEDROCK_ROUTE_MODEL`
+- `BEDROCK_LIGHT_MODEL`
+- optional AWS auth vars if not using profile/instance creds:
+  - `AWS_ACCESS_KEY_ID`
+  - `AWS_SECRET_ACCESS_KEY`
+  - `AWS_SESSION_TOKEN`
+
+## Install
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+py -3.10 -m pip install -r requirements.txt
 ```
 
-2. Copy the environment template.
+Use `py -3.11` if you have Python 3.11 installed.
+
+## One-Time Data Setup
 
 ```bash
-copy .env.example .env
+py -3.10 elastic/create_indices.py
+py -3.10 ingestion/generate_embeddings.py
+py -3.10 ingestion/ingest_sample_data.py
 ```
 
-3. Fill in Elastic, Jina, and AWS Bedrock credentials if available. The tools include sample fallbacks, so the local demo can still run without live credentials.
-
-4. Create Elasticsearch indices.
+Optional crawler refresh:
 
 ```bash
-python elastic/create_indices.py
+py -3.10 ingestion/crawl_sources.py
 ```
 
-5. Generate embeddings for sample context.
+## Run
+
+Local reasoning (tools + heuristics, no Bedrock):
 
 ```bash
-python ingestion/generate_embeddings.py
+py -3.10 main.py "I am at Spice Garden and need to reach MG Road by 6 PM. What should I do?"
 ```
 
-6. Ingest sample data.
+Bedrock reasoning enabled:
 
 ```bash
-python ingestion/ingest_sample_data.py
+py -3.10 main.py "I am at Spice Garden and need to reach MG Road by 6 PM. What should I do?" --use-bedrock
 ```
 
-## Demo Flow
+Output includes:
 
-Demo query:
+- `trace`: proves each graph node/agent ran
+- `evidence`: weather, route/traffic, transit payloads
+- `decision_log`: Elasticsearch log status
+- `bedrock_status` and `bedrock_errors`: model call status per agent
 
-```txt
-I am at Spice Garden and need to reach MG Road by 6 PM. What should I do?
+## Health Check
+
+```bash
+py -3.10 check_stack.py
 ```
 
-Expected answer shape:
+This verifies:
 
-```txt
-Leave in 18 minutes.
+- Elasticsearch connectivity and index counts
+- Bedrock model invocation readiness
 
-Best option: Metro + walk.
+## Kibana Dashboard / UI
 
-Route: Spice Garden -> Indiranagar Metro -> MG Road -> walk 900m.
+Current runnable UI: terminal JSON output from `main.py`.
 
-Why:
-- Metro is more predictable during evening traffic.
-- Cab has high congestion risk around Domlur and Indiranagar.
-- Rain risk is moderate, but walking is manageable.
-- Parking near MG Road is unreliable during evening hours.
+For judge-facing demo UI:
 
-Alternative: Cab via Old Airport Road, but reliability is lower.
+1. Open Kibana in Elastic Cloud Serverless
+2. Create data views for:
+   - `commute_context`
+   - `commute_places`
+   - `commute_routes`
+   - `commute_decision_logs`
+3. Build a simple dashboard with:
+   - index document counts
+   - table of latest decision logs
+   - route reliability/traffic views
 
-Confidence: 84%
-```
-
-## Agent Files
-
-The `agents/` directory contains copy-ready instructions for Elastic Agent Builder:
-
-- `supervisor_agent.md`
-- `weather_agent.md`
-- `route_traffic_agent.md`
-- `transit_context_agent.md`
-
-Commute-Copilot keeps the system small enough to demo reliably. Ingestion runs before the demo. Agents query Elasticsearch during the live answer. The Supervisor explains its decision and logs the result for Kibana.
-
-The core story is simple: Bengaluru commute choices are uncertain, but the agent can make the tradeoff visible.
+You can also use Elastic Agent Builder chat as an external demo interface using `agents/*.md` prompts.
