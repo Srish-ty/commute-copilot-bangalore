@@ -10,52 +10,32 @@ Example:
 
 ## Project Overview
 RouteWise Bengaluru is a multi-agent commute planner that helps users decide:
-- when to leave
-- which route to take, why that route is better
+- when to leave, which route to take, why that route is better
 - which mode of transport to choose
 - what risks exist, what alternatives are available
 Instead of giving only a map route, Commute-Copilot gives a commute decision with transparent reasoning.
 
 ## Final Tech Stack
 ### Agent Development
-- Elastic Agent Builder
-- Amazon Bedrock
+- Elastic Agent Builder, Amazon Bedrock
 
 ### LLMs
-- Claude 3.5 Sonnet via Amazon Bedrock for Supervisor Agent and complex reasoning
-- Amazon Nova Lite / Claude Haiku for lightweight specialist agents
+- `Claude 3.5 Sonnet` via Amazon Bedrock for Supervisor Agent and complex reasoning
+- `Amazon Nova Lite` & `Claude Haiku` for lightweight specialist agents
 
 ### Search and Retrieval
-- Elasticsearch on Elastic Cloud Serverless
-- ES|QL
-- Hybrid search
+- Elasticsearch on Elastic Cloud Serverless, ES|QL
 - Vector search
-
 ### Embeddings
-- Jina Embeddings v5
-- Model: `jina-embeddings-v5-text-small`
-- Used for semantic retrieval over commute context, advisories, events, parking notes, and previous decisions
+- Jina Embeddings v5, Model: `jina-embeddings-v5-text-small`. Used for semantic retrieval over commute context, advisories, events, parking notes, and previous decisions
 
 ### Data Collection
-- Python ingestion scripts
-- Lightweight crawler / Elastic Open Crawler
-- Open-Meteo API
-- OSRM / OpenStreetMap route data
-- Manual Bengaluru commute dataset
+- Python ingestion scripts, Lightweight crawler
+- Elastic Open Crawler
+- Open-Meteo API, OSRM / OpenStreetMap route data, Manual Bengaluru commute dataset
 
 ### Visualization
 - Kibana dashboard
-
-### Deployment
-No custom EC2 deployment is required for the MVP.
-
-The system uses:
-- Elastic Cloud Serverless for Elasticsearch and Kibana
-- Amazon Bedrock for LLM reasoning
-- Local Python scripts for ingestion and crawling
-- Elastic Agent Builder for the agent demo
-
-The goal is to build a working, explainable, multi-agent commute intelligence system using Elastic and AWS.
 
 ## High-Level Architecture
 ```mermaid
@@ -79,3 +59,11 @@ flowchart TD
     Final --> DecisionLogs[Decision Logs]
     DecisionLogs --> Elastic
     Elastic --> Kibana[Kibana Dashboard]
+```
+
+The system uses:
+- Elastic Cloud Serverless for Elasticsearch and Kibana
+- Amazon Bedrock for LLM reasoning
+- Local Python scripts for ingestion and crawling
+- Elastic Agent Builder for the agent demo
+The goal is to build a working, explainable, multi-agent commute intelligence system using Elastic and AWS.
