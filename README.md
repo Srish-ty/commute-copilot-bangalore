@@ -1,17 +1,13 @@
-# RouteWise Bengaluru
+# Commute-Copilot Bengaluru
 
 AI-powered multi-agent commute intelligence for Bengaluru, built for AWS UG Bengaluru HackNight.
 
 ## Problem Statement
 
-### 02 - Commute Intelligence
+### Commute Intelligence
 
 Every Bengaluru morning is the same calculation: traffic, BMTC, Metro, parking, weather, school timings, route choice, mode choice, and departure time.
-
-People usually answer this question with vibes.
-
 RouteWise Bengaluru answers it with transparent reasoning grounded in real feeds, curated local context, and Elasticsearch retrieval.
-
 Example:
 
 > Leave in 18 minutes, take Metro to MG Road, walk the last kilometre. Here is why.
@@ -20,16 +16,9 @@ Example:
 
 RouteWise Bengaluru is a hackathon-ready multi-agent system. It recommends:
 
-- when to leave
-- which mode to use
-- which route to prefer
-- what risks matter
-- what alternatives exist
-- how confident the recommendation is
-
-The MVP intentionally avoids unnecessary infrastructure.
-
-No EC2. No separate frontend. No normal backend server. No extra microservices.
+- when to leave, which mode to use
+- which route to prefer, how confident the recommendation is
+- what risks matter, what alternatives exist
 
 ## Final Architecture
 
@@ -184,8 +173,6 @@ The `agents/` directory contains copy-ready instructions for Elastic Agent Build
 - `route_traffic_agent.md`
 - `transit_context_agent.md`
 
-## Why This Is Hackathon-Ready
-
-RouteWise keeps the system small enough to demo reliably. Ingestion runs before the demo. Agents query Elasticsearch during the live answer. The Supervisor explains its decision and logs the result for Kibana.
+Commute-Copilot keeps the system small enough to demo reliably. Ingestion runs before the demo. Agents query Elasticsearch during the live answer. The Supervisor explains its decision and logs the result for Kibana.
 
 The core story is simple: Bengaluru commute choices are uncertain, but the agent can make the tradeoff visible.
