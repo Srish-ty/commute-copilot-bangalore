@@ -1,0 +1,19 @@
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "title": { "type": "text", "fields": { "keyword": { "type": "keyword" } } },
+      "content": { "type": "text" },
+      "source_url": { "type": "keyword" },
+      "area": { "type": "keyword" },
+      "category": { "type": "keyword" },
+      "embedding": {
+        "type": "dense_vector",
+        "dims": 1024,
+        "index": true,
+        "similarity": "cosine"
+      },
+      "created_at": { "type": "date" }
+    }
+  }
+}

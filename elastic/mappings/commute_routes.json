@@ -1,0 +1,23 @@
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "source": { "type": "keyword" },
+      "destination": { "type": "keyword" },
+      "mode": { "type": "keyword" },
+      "duration_min": { "type": "integer" },
+      "distance_km": { "type": "float" },
+      "traffic_risk": { "type": "keyword" },
+      "parking_risk": { "type": "keyword" },
+      "last_mile_walk_min": { "type": "integer" },
+      "reliability_score": { "type": "float" },
+      "route_summary": { "type": "text" },
+      "embedding": {
+        "type": "dense_vector",
+        "dims": 1024,
+        "index": true,
+        "similarity": "cosine"
+      }
+    }
+  }
+}

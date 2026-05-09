@@ -1,0 +1,14 @@
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "name": { "type": "keyword" },
+      "type": { "type": "keyword" },
+      "area": { "type": "keyword" },
+      "latitude": { "type": "float" },
+      "longitude": { "type": "float" },
+      "risk_score": { "type": "float" },
+      "notes": { "type": "text" }
+    }
+  }
+}

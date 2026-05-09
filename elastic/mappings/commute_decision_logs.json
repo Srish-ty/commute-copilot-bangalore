@@ -1,0 +1,18 @@
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "keyword" },
+      "user_query": { "type": "text" },
+      "source": { "type": "keyword" },
+      "destination": { "type": "keyword" },
+      "target_time": { "type": "keyword" },
+      "selected_mode": { "type": "keyword" },
+      "selected_route": { "type": "text" },
+      "reasoning": { "type": "text" },
+      "risks": { "type": "text" },
+      "alternatives": { "type": "text" },
+      "confidence": { "type": "float" },
+      "created_at": { "type": "date" }
+    }
+  }
+}

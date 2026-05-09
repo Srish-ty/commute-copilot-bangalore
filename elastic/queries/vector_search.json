@@ -1,0 +1,9 @@
+{
+  "knn": {
+    "field": "embedding",
+    "query_vector": [],
+    "k": 5,
+    "num_candidates": 50
+  },
+  "_source": ["title", "content", "area", "category", "source_url"]
+}

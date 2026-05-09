@@ -1,0 +1,6 @@
+FROM commute_routes
+| WHERE source == ?source AND destination == ?destination
+| EVAL risk_weight = CASE(traffic_risk == "high", 0.30, traffic_risk == "medium", 0.15, 0.05)
+| EVAL ranked_score = reliability_score - risk_weight
+| SORT ranked_score DESC
+| KEEP source, destination, mode, duration_min, traffic_risk, parking_risk, reliability_score, ranked_score

@@ -1,0 +1,20 @@
+{
+  "query": {
+    "bool": {
+      "should": [
+        {
+          "multi_match": {
+            "query": "{{query}}",
+            "fields": ["title^2", "content", "route_summary", "notes"]
+          }
+        },
+        {
+          "terms": {
+            "area": ["{{area}}"]
+          }
+        }
+      ]
+    }
+  },
+  "size": 5
+}
