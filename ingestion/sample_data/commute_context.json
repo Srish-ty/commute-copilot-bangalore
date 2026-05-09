@@ -1,0 +1,38 @@
+[
+  {
+    "id": "context-domlur-evening",
+    "title": "Evening congestion near Domlur",
+    "content": "Domlur and Indiranagar experience high evening congestion. Metro is usually more predictable for trips toward MG Road during peak hours.",
+    "source_url": "sample://curated/domlur-evening",
+    "area": "Domlur",
+    "category": "traffic",
+    "created_at": "2026-05-09T00:00:00Z"
+  },
+  {
+    "id": "context-mg-road-parking",
+    "title": "Parking difficulty near MG Road",
+    "content": "MG Road parking availability is unreliable after office hours. Drivers may spend additional time looking for parking near Brigade Road and Church Street.",
+    "source_url": "sample://curated/mg-road-parking",
+    "area": "MG Road",
+    "category": "parking",
+    "created_at": "2026-05-09T00:00:00Z"
+  },
+  {
+    "id": "context-purple-line",
+    "title": "Purple Line reliability for central Bengaluru",
+    "content": "The Purple Line is a predictable option for Indiranagar to MG Road because it avoids Old Airport Road and central business district traffic.",
+    "source_url": "sample://curated/purple-line",
+    "area": "Indiranagar",
+    "category": "metro",
+    "created_at": "2026-05-09T00:00:00Z"
+  },
+  {
+    "id": "context-rain-last-mile",
+    "title": "Rain and last-mile walking",
+    "content": "Moderate rain mainly affects last-mile comfort. If the walk is below ten minutes, metro plus umbrella remains a strong option.",
+    "source_url": "sample://curated/rain-last-mile",
+    "area": "Bengaluru",
+    "category": "weather",
+    "created_at": "2026-05-09T00:00:00Z"
+  }
+]

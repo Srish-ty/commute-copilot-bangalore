@@ -1,0 +1,32 @@
+[
+  {
+    "id": "metro-indiranagar",
+    "name": "Indiranagar",
+    "type": "metro_station",
+    "area": "Indiranagar",
+    "latitude": 12.9783,
+    "longitude": 77.6388,
+    "risk_score": 0.18,
+    "notes": "Purple Line station. Useful for trips toward MG Road, Cubbon Park, Majestic, and Whitefield side."
+  },
+  {
+    "id": "metro-mg-road",
+    "name": "MG Road",
+    "type": "metro_station",
+    "area": "MG Road",
+    "latitude": 12.9755,
+    "longitude": 77.6067,
+    "risk_score": 0.21,
+    "notes": "Purple Line station with good walk access to MG Road, Church Street, and Brigade Road."
+  },
+  {
+    "id": "metro-baiyappanahalli",
+    "name": "Baiyappanahalli",
+    "type": "metro_station",
+    "area": "Baiyappanahalli",
+    "latitude": 12.9907,
+    "longitude": 77.6529,
+    "risk_score": 0.22,
+    "notes": "Purple Line interchange-side station for eastern Bengaluru trips."
+  }
+]

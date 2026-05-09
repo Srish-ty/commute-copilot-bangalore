@@ -1,0 +1,54 @@
+[
+  {
+    "id": "route-spicegarden-mgroad-cab",
+    "source": "Spice Garden",
+    "destination": "MG Road",
+    "mode": "cab",
+    "duration_min": 52,
+    "distance_km": 9.8,
+    "traffic_risk": "high",
+    "parking_risk": "high",
+    "last_mile_walk_min": 2,
+    "reliability_score": 0.54,
+    "route_summary": "Spice Garden to MG Road by cab via Old Airport Road, Domlur, and Indiranagar."
+  },
+  {
+    "id": "route-spicegarden-mgroad-metro-walk",
+    "source": "Spice Garden",
+    "destination": "MG Road",
+    "mode": "metro_walk",
+    "duration_min": 38,
+    "distance_km": 8.6,
+    "traffic_risk": "low",
+    "parking_risk": "none",
+    "last_mile_walk_min": 9,
+    "reliability_score": 0.86,
+    "route_summary": "Walk or auto to Indiranagar Metro, take Purple Line to MG Road, then walk the last kilometre."
+  },
+  {
+    "id": "route-whitefield-mgroad-metro",
+    "source": "Whitefield",
+    "destination": "MG Road",
+    "mode": "metro",
+    "duration_min": 48,
+    "distance_km": 20.5,
+    "traffic_risk": "low",
+    "parking_risk": "none",
+    "last_mile_walk_min": 7,
+    "reliability_score": 0.84,
+    "route_summary": "Purple Line metro from Whitefield side toward MG Road with short last-mile walk."
+  },
+  {
+    "id": "route-hsr-mgroad-cab",
+    "source": "HSR Layout",
+    "destination": "MG Road",
+    "mode": "cab",
+    "duration_min": 64,
+    "distance_km": 13.2,
+    "traffic_risk": "high",
+    "parking_risk": "high",
+    "last_mile_walk_min": 2,
+    "reliability_score": 0.46,
+    "route_summary": "Cab from HSR Layout to MG Road with risk around Silk Board, Koramangala, and Richmond Road."
+  }
+]

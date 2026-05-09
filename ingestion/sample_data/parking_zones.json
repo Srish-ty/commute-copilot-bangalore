@@ -1,0 +1,22 @@
+[
+  {
+    "id": "parking-mg-road",
+    "name": "MG Road parking belt",
+    "type": "parking_zone",
+    "area": "MG Road",
+    "latitude": 12.9756,
+    "longitude": 77.6068,
+    "risk_score": 0.81,
+    "notes": "Parking search time is unreliable during evening peak, weekends, and event nights."
+  },
+  {
+    "id": "parking-indiranagar",
+    "name": "Indiranagar 12th Main and 100 Feet Road",
+    "type": "parking_zone",
+    "area": "Indiranagar",
+    "latitude": 12.9709,
+    "longitude": 77.6412,
+    "risk_score": 0.78,
+    "notes": "Street parking fills quickly near restaurants and retail areas after 6 PM."
+  }
+]

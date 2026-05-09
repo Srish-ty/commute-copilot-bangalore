@@ -1,0 +1,42 @@
+[
+  {
+    "id": "hotspot-domlur",
+    "name": "Domlur",
+    "type": "traffic_hotspot",
+    "area": "Domlur",
+    "latitude": 12.9609,
+    "longitude": 77.6387,
+    "risk_score": 0.82,
+    "notes": "Domlur flyover and Old Airport Road approaches see heavy peak-hour congestion, especially toward Indiranagar and MG Road."
+  },
+  {
+    "id": "hotspot-indiranagar",
+    "name": "Indiranagar 100 Feet Road",
+    "type": "traffic_hotspot",
+    "area": "Indiranagar",
+    "latitude": 12.9784,
+    "longitude": 77.6408,
+    "risk_score": 0.76,
+    "notes": "Restaurant, retail, and office traffic make Indiranagar slow during evening peaks."
+  },
+  {
+    "id": "hotspot-silk-board",
+    "name": "Silk Board Junction",
+    "type": "traffic_hotspot",
+    "area": "Silk Board",
+    "latitude": 12.9177,
+    "longitude": 77.6239,
+    "risk_score": 0.92,
+    "notes": "Known high-variance commute zone with frequent bottlenecks toward HSR, BTM, and Electronic City."
+  },
+  {
+    "id": "hotspot-mg-road",
+    "name": "MG Road",
+    "type": "traffic_hotspot",
+    "area": "MG Road",
+    "latitude": 12.9756,
+    "longitude": 77.6068,
+    "risk_score": 0.71,
+    "notes": "Central business district traffic, limited curbside stopping, and parking search time affect evening arrivals."
+  }
+]
