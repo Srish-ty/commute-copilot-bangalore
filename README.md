@@ -13,15 +13,28 @@ Hackathon MVP for AWS UG Bengaluru HackNight: a multi-agent commute intelligence
 
 ## Runtime Architecture
 
-```text
-User Query
-  -> LangGraph flow
-     -> Weather Agent
-     -> Route + Traffic Agent
-     -> Transit Context Agent
-     -> Supervisor Agent decision
-  -> Log final decision to Elasticsearch
-  -> Visualize in Kibana
+```mermaid
+flowchart TD
+    User["User commute query"] --> Graph["LangGraph workflow"]
+    Graph --> Parse["Parse query"]
+    Parse --> Weather["Weather Agent"]
+    Weather --> RouteTraffic["Route + Traffic Agent"]
+    RouteTraffic --> Transit["Transit Context Agent"]
+    Transit --> Supervisor["CommuteCopilot Supervisor Agent"]
+
+    Weather --> OpenMeteo["Open-Meteo API / fallback weather"]
+    RouteTraffic --> OSRM["OSRM / sample route data"]
+    RouteTraffic --> Elastic["Elasticsearch Serverless"]
+    Transit --> Elastic
+
+    Crawler["Crawler + curated sample data"] --> Ingestion["Python ingestion scripts"]
+    Ingestion --> Embeddings["Jina embeddings"]
+    Embeddings --> Elastic
+
+    Supervisor --> Decision["Final recommendation"]
+    Decision --> Logs["commute_decision_logs"]
+    Logs --> Elastic
+    Elastic --> Kibana["Kibana dashboard"]
 ```
 
 ## Code Layout
@@ -41,21 +54,7 @@ commute-copilot-bangalore/
 
 ## Python
 
-Recommended: Python `3.11`.  
-Currently tested here on `3.10.7` using `py`.
-
-If `python` is not recognized but `py` works:
-
-```powershell
-Set-Alias python py
-```
-
-To make it permanent:
-
-```powershell
-if (-not (Test-Path $PROFILE)) { New-Item -ItemType File -Path $PROFILE -Force | Out-Null }
-Add-Content -Path $PROFILE -Value "Set-Alias python py"
-```
+Recommended: Python `3.11`. The commands below use the Windows Python launcher (`py`) so they work even when `python` is not on PATH.
 
 ## Environment Variables
 
@@ -108,6 +107,12 @@ Bedrock reasoning enabled:
 
 ```bash
 py -3.10 main.py "I am at Spice Garden and need to reach MG Road by 6 PM. What should I do?" --use-bedrock
+```
+
+Verbose agent run:
+
+```bash
+py -3.10 main.py "I am at Spice Garden and need to reach MG Road by 6 PM. What should I do?" --verbose
 ```
 
 Output includes:

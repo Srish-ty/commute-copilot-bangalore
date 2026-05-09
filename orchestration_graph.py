@@ -30,12 +30,18 @@ class CommuteCopilotGraphRunner:
         weather_agent: WeatherAgent,
         route_traffic_agent: RouteTrafficAgent,
         transit_agent: TransitContextAgent,
+        verbose: bool = False,
     ) -> None:
         self.supervisor = supervisor
         self.weather_agent = weather_agent
         self.route_traffic_agent = route_traffic_agent
         self.transit_agent = transit_agent
+        self.verbose = verbose
         self.graph = self._build_graph()
+
+    def _log(self, message: str) -> None:
+        if self.verbose:
+            print(f"[CommuteCopilot] {message}")
 
     def _build_graph(self):
         builder = StateGraph(CommuteCopilotState)
@@ -53,17 +59,34 @@ class CommuteCopilotGraphRunner:
         return builder.compile()
 
     def _parse_query(self, state: CommuteCopilotState) -> CommuteCopilotState:
+        self._log("Supervisor parsing user query")
         req = self.supervisor.parse_user_query(state["user_query"])
+        self._log(
+            f"Parsed source={req.source!r}, destination={req.destination!r}, target_time={req.target_time!r}"
+        )
         return {"request": req, "trace": [*state.get("trace", []), "parse_query"]}
 
     def _weather_agent_node(self, state: CommuteCopilotState) -> CommuteCopilotState:
         req = state["request"]
+        self._log("Weather Agent fetching weather context")
         weather = self.weather_agent.run(req.source, req.destination, req.target_time)
+        self._log(
+            "Weather Agent returned "
+            f"condition={weather.get('condition')!r}, walking_risk={weather.get('walking_risk')!r}, "
+            f"risk_score={weather.get('weather_risk_score')!r}"
+        )
         return {"weather": weather, "trace": [*state.get("trace", []), "weather_agent"]}
 
     def _route_traffic_agent_node(self, state: CommuteCopilotState) -> CommuteCopilotState:
         req = state["request"]
+        self._log("Route + Traffic Agent fetching routes and Elastic traffic context")
         route_traffic = self.route_traffic_agent.run(req.source, req.destination)
+        self._log(
+            "Route + Traffic Agent returned "
+            f"{len(route_traffic.get('routes', []))} route(s), "
+            f"candidate={route_traffic.get('recommended_route_candidate')!r}, "
+            f"elastic_hits={len(route_traffic.get('elastic_evidence', []))}"
+        )
         return {
             "route_traffic": route_traffic,
             "trace": [*state.get("trace", []), "route_traffic_agent"],
@@ -71,15 +94,27 @@ class CommuteCopilotGraphRunner:
 
     def _transit_agent_node(self, state: CommuteCopilotState) -> CommuteCopilotState:
         req = state["request"]
+        self._log("Transit Context Agent fetching metro/BMTC and Elastic context")
         transit = self.transit_agent.run(req.source, req.destination)
+        self._log(
+            "Transit Context Agent returned "
+            f"metro_possible={transit.get('metro_possible')!r}, "
+            f"source_station={transit.get('nearest_source_metro')!r}, "
+            f"destination_station={transit.get('nearest_destination_metro')!r}"
+        )
         return {"transit": transit, "trace": [*state.get("trace", []), "transit_agent"]}
 
     def _supervisor_decide_node(self, state: CommuteCopilotState) -> CommuteCopilotState:
         req = state["request"]
+        self._log("Supervisor comparing evidence and creating final decision")
         evidence = AgentBundle(
             weather=state["weather"], route_traffic=state["route_traffic"], transit=state["transit"]
         )
         decision = self.supervisor.decide(req, evidence)
+        self._log(
+            "Supervisor selected "
+            f"mode={decision.get('recommended_mode')!r}, confidence={decision.get('confidence')!r}"
+        )
         decision["decision_log"] = log_decision(
             {
                 "user_query": req.user_query,
@@ -95,6 +130,7 @@ class CommuteCopilotGraphRunner:
                 "created_at": datetime.now(timezone.utc).isoformat(),
             }
         )
+        self._log(f"Decision log status={decision['decision_log'].get('logged')!r}")
         decision["evidence"] = evidence.model_dump()
         return {"decision": decision, "trace": [*state.get("trace", []), "supervisor_decide"]}
 

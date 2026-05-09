@@ -12,7 +12,7 @@ from llm_provider import LangChainReasoner
 from orchestration_graph import CommuteCopilotGraphRunner
 
 
-def build_graph_runner(use_bedrock: bool) -> CommuteCopilotGraphRunner:
+def build_graph_runner(use_bedrock: bool, verbose: bool = False) -> CommuteCopilotGraphRunner:
     settings = load_settings()
     supervisor_reasoner = None
     route_reasoner = None
@@ -41,6 +41,7 @@ def build_graph_runner(use_bedrock: bool) -> CommuteCopilotGraphRunner:
         weather_agent=weather,
         route_traffic_agent=route,
         transit_agent=transit,
+        verbose=verbose,
     )
 
 
@@ -52,9 +53,14 @@ def main() -> None:
         action="store_true",
         help="Use Amazon Bedrock for reasoning. Without this flag, tool-driven local fallback is used.",
     )
+    parser.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Print each agent fetch/return step while the LangGraph workflow runs.",
+    )
     args = parser.parse_args()
 
-    runner = build_graph_runner(use_bedrock=args.use_bedrock)
+    runner = build_graph_runner(use_bedrock=args.use_bedrock, verbose=args.verbose)
     result = runner.run(args.query)
     print(json.dumps(result, indent=2))
 
