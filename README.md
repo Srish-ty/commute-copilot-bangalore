@@ -1,100 +1,191 @@
-# Commute Copilot Bangalore
-AI Agent to tackle commute problem, assisting with routes, mode and time. Using Open crawler, Jina embeddings v5, Elastic Inference Service, Kibana, EC2
+# RouteWise Bengaluru
 
-AI-powered commute intelligence agent for Bengaluru, built for the AWS UG Bengaluru HackNight hackathon.
+AI-powered multi-agent commute intelligence for Bengaluru, built for AWS UG Bengaluru HackNight.
 
 ## Problem Statement
 
-### Commute Intelligence
+### 02 - Commute Intelligence
 
-Every Bengaluru morning is the same calculation: traffic, BMTC, Metro, parking, weather, and whether the schools are letting out early, multiplied by which route, which mode, and which time.
+Every Bengaluru morning is the same calculation: traffic, BMTC, Metro, parking, weather, school timings, route choice, mode choice, and departure time.
 
 People usually answer this question with vibes.
 
-The goal of this project is to build an agent that answers it with reasoning, grounded in real feeds and explained transparently.
+RouteWise Bengaluru answers it with transparent reasoning grounded in real feeds, curated local context, and Elasticsearch retrieval.
 
-Example output:
+Example:
 
-> Leave in 18 minutes, take Metro to MG Road, walk the last kilometre — here’s why.
+> Leave in 18 minutes, take Metro to MG Road, walk the last kilometre. Here is why.
 
-## Project Idea
+## What This MVP Builds
 
-RouteWise Bengaluru is an AI commute planner that recommends when to leave, which mode to take, and why that option is better.
+RouteWise Bengaluru is a hackathon-ready multi-agent system. It recommends:
 
-The agent considers:
-- traffic risk
-- Metro/BMTC availability
-- weather
-- parking difficulty
-- events or school/office timing patterns
-- last-mile walking effort
-- route confidence score
+- when to leave
+- which mode to use
+- which route to prefer
+- what risks matter
+- what alternatives exist
+- how confident the recommendation is
 
-## Hackathon Context
+The MVP intentionally avoids unnecessary infrastructure.
 
-This is a hackathon project for AWS UG Bengaluru HackNight.
+No EC2. No separate frontend. No normal backend server. No extra microservices.
 
-Judging criteria:
-- Real-world impact and relevance
-- Data effort
-- Elastic usage
-- AWS usage
-- Actionability and security practices
-- Demo quality and storytelling
+## Final Architecture
+
+```mermaid
+flowchart TD
+    User["User Query"] --> Supervisor["RouteWise Supervisor Agent"]
+
+    Supervisor --> Weather["Weather Agent"]
+    Supervisor --> RouteTraffic["Route + Traffic Agent"]
+    Supervisor --> Transit["Transit Context Agent"]
+
+    Weather --> OpenMeteo["Open-Meteo API or fallback data"]
+    RouteTraffic --> OSRM["OSRM / OpenStreetMap or fallback routes"]
+    RouteTraffic --> Elastic["Elasticsearch on Elastic Cloud Serverless"]
+    Transit --> Elastic
+
+    Sources["Crawler + curated Bengaluru data"] --> Ingestion["Python ingestion scripts"]
+    Ingestion --> Jina["Jina Embeddings v5 text small"]
+    Jina --> Elastic
+
+    Supervisor --> Decision["Final commute recommendation"]
+    Decision --> Logs["commute_decision_logs"]
+    Logs --> Elastic
+    Elastic --> Kibana["Kibana dashboard"]
+```
+
+## Low-Level Flow
+
+```txt
+User asks a commute question
+  -> Supervisor extracts source, destination, time, and preferences
+  -> Supervisor calls Weather Agent
+  -> Supervisor calls Route + Traffic Agent
+  -> Supervisor calls Transit Context Agent
+  -> Specialists retrieve structured and contextual evidence
+  -> Supervisor compares evidence and chooses the most predictable option
+  -> Final decision is logged to Elasticsearch
+  -> Kibana shows indexed data and decision logs
+```
 
 ## Tech Stack
 
-### Frontend
-- Next.js
-- Tailwind CSS
-
-### Backend
-- FastAPI or Node.js/Express
-- REST APIs for commute recommendations
-
-### Agent Layer
+- Elastic Agent Builder for agent development and demo chat
 - Amazon Bedrock for LLM reasoning
-- Elastic Agent Builder for agent workflow
-- Tool-based reasoning for route, weather, traffic, and context lookup
+- Claude 3.5 Sonnet for Supervisor and Route + Traffic Agents
+- Amazon Nova Lite or Claude Haiku for Weather and Transit Context Agents
+- Elasticsearch on Elastic Cloud Serverless for structured and vector search
+- Kibana for dashboard and demo storytelling
+- Jina Embeddings v5 text small for semantic contextual retrieval
+- Python 3.11 for tools, crawling, embeddings, and ingestion
 
-### Search and Retrieval
-- Elastic Cloud Serverless
-- Elasticsearch
-- ES|QL
-- Jina Embeddings v5
-- Vector search for route/context retrieval
-- Kibana dashboard for demo and observability
+## Repository Structure
 
-### AWS
-- Amazon Bedrock
-- EC2 for backend deployment
-- S3 for storing raw commute/context data
-- Lambda optional for scheduled crawling
-- CloudWatch optional for logs
+```txt
+commute-copilot-bangalore/
+├── README.md
+├── .env.example
+├── requirements.txt
+├── ingestion/
+│   ├── ingest_sample_data.py
+│   ├── crawl_sources.py
+│   ├── generate_embeddings.py
+│   └── sample_data/
+├── elastic/
+│   ├── create_indices.py
+│   ├── mappings/
+│   └── queries/
+├── tools/
+├── agents/
+└── docs/
+```
 
-## Architecture
+## Elasticsearch Indices
 
-User enters source, destination, target arrival time, and preferences.
+- `commute_context`: unstructured commute notes, advisories, events, and local context with dense vectors
+- `commute_places`: metro stations, hotspots, parking zones, and locality context
+- `commute_routes`: sample and API-derived route alternatives with reliability fields and dense vectors
+- `commute_decision_logs`: final Supervisor decisions for transparency and dashboarding
 
-The backend sends this query to the agent.
+Embeddings are used only for semantic/contextual retrieval. Exact ETA, weather, and route duration should come from structured fields or APIs.
 
-The agent uses tools to:
-1. Search indexed commute data in Elasticsearch
-2. Retrieve relevant route/context records using vector search
-3. Check weather and traffic risk
-4. Compare commute options
-5. Generate a transparent recommendation
+## Setup
 
-The final output includes:
-- recommended leave time
-- best route
-- mode of transport
-- explanation
-- risks
-- confidence score
-- alternate options
+1. Create a Python environment.
 
-## Example Query
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+```
+
+2. Copy the environment template.
+
+```bash
+copy .env.example .env
+```
+
+3. Fill in Elastic, Jina, and AWS Bedrock credentials if available. The tools include sample fallbacks, so the local demo can still run without live credentials.
+
+4. Create Elasticsearch indices.
+
+```bash
+python elastic/create_indices.py
+```
+
+5. Generate embeddings for sample context.
+
+```bash
+python ingestion/generate_embeddings.py
+```
+
+6. Ingest sample data.
+
+```bash
+python ingestion/ingest_sample_data.py
+```
+
+## Demo Flow
+
+Demo query:
 
 ```txt
 I am at Spice Garden and need to reach MG Road by 6 PM. What should I do?
+```
+
+Expected answer shape:
+
+```txt
+Leave in 18 minutes.
+
+Best option: Metro + walk.
+
+Route: Spice Garden -> Indiranagar Metro -> MG Road -> walk 900m.
+
+Why:
+- Metro is more predictable during evening traffic.
+- Cab has high congestion risk around Domlur and Indiranagar.
+- Rain risk is moderate, but walking is manageable.
+- Parking near MG Road is unreliable during evening hours.
+
+Alternative: Cab via Old Airport Road, but reliability is lower.
+
+Confidence: 84%
+```
+
+## Agent Files
+
+The `agents/` directory contains copy-ready instructions for Elastic Agent Builder:
+
+- `supervisor_agent.md`
+- `weather_agent.md`
+- `route_traffic_agent.md`
+- `transit_context_agent.md`
+
+## Why This Is Hackathon-Ready
+
+RouteWise keeps the system small enough to demo reliably. Ingestion runs before the demo. Agents query Elasticsearch during the live answer. The Supervisor explains its decision and logs the result for Kibana.
+
+The core story is simple: Bengaluru commute choices are uncertain, but the agent can make the tradeoff visible.
