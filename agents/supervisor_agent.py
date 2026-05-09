@@ -5,36 +5,18 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from agents.base import AgentBase, normalize_text, safe_json_extract
-from agents.route_traffic_agent import RouteTrafficAgent
-from agents.transit_context_agent import TransitContextAgent
-from agents.weather_agent import WeatherAgent
 from models import AgentBundle, CommuteRequest, SupervisorDecision
-from tools.decision_log_tool import log_decision
 
 
 class SupervisorAgent(AgentBase):
     SYSTEM_PROMPT = (
-        "You are the Commute-Copilot Supervisor Agent. "
+        "You are the CommuteCopilot Supervisor Agent. "
         "Always reason from specialist evidence and return only valid JSON with keys: "
         "leave_in_minutes, recommended_mode, route, reasoning, risks, alternatives, confidence."
     )
 
-    def __init__(
-        self,
-        reasoner,
-        model_id: str,
-        weather_agent: WeatherAgent,
-        route_traffic_agent: RouteTrafficAgent,
-        transit_agent: TransitContextAgent,
-    ) -> None:
-        super().__init__(reasoner=reasoner, model_id=model_id)
-        self.weather_agent = weather_agent
-        self.route_traffic_agent = route_traffic_agent
-        self.transit_agent = transit_agent
-
     def parse_user_query(self, query: str) -> CommuteRequest:
         compact = normalize_text(query)
-        # very lightweight parser for MVP
         source = "Spice Garden"
         destination = "MG Road"
         target_time = "18:00"
@@ -53,7 +35,7 @@ class SupervisorAgent(AgentBase):
             preferences=[],
         )
 
-    def _fallback_decision(self, req: CommuteRequest, evidence: AgentBundle) -> SupervisorDecision:
+    def fallback_decision(self, req: CommuteRequest, evidence: AgentBundle) -> SupervisorDecision:
         top_route = evidence.route_traffic["routes"][0]
         weather = evidence.weather
         transit = evidence.transit
@@ -98,45 +80,21 @@ class SupervisorAgent(AgentBase):
             confidence=confidence,
         )
 
-    def run(self, user_query: str) -> dict[str, Any]:
-        req = self.parse_user_query(user_query)
-        weather = self.weather_agent.run(req.source, req.destination, req.target_time)
-        route_traffic = self.route_traffic_agent.run(req.source, req.destination)
-        transit = self.transit_agent.run(req.source, req.destination)
-        evidence = AgentBundle(weather=weather, route_traffic=route_traffic, transit=transit)
-        fallback = self._fallback_decision(req, evidence).model_dump()
-
-        if self.reasoner:
+    def decide(self, req: CommuteRequest, evidence: AgentBundle) -> dict[str, Any]:
+        fallback = self.fallback_decision(req, evidence).model_dump()
+        if not self.reasoner:
+            decision = fallback
+        else:
             prompt = (
                 f"User query: {req.user_query}\n"
                 f"Parsed request: {req.model_dump()}\n"
-                f"Weather evidence: {weather}\n"
-                f"Route/traffic evidence: {route_traffic}\n"
-                f"Transit evidence: {transit}\n"
+                f"Weather evidence: {evidence.weather}\n"
+                f"Route/traffic evidence: {evidence.route_traffic}\n"
+                f"Transit evidence: {evidence.transit}\n"
                 "Prefer predictable commute over shortest one."
             )
-            decision = safe_json_extract(
-                self.reasoner.generate_json(self.model_id, self.SYSTEM_PROMPT, prompt),
-                fallback,
-            )
-        else:
-            decision = fallback
+            decision = safe_json_extract(self.reasoner.generate_json(self.SYSTEM_PROMPT, prompt), fallback)
 
-        log_payload = {
-            "user_query": req.user_query,
-            "source": req.source,
-            "destination": req.destination,
-            "target_time": req.target_time,
-            "selected_mode": decision.get("recommended_mode", ""),
-            "selected_route": decision.get("route", ""),
-            "reasoning": " | ".join(decision.get("reasoning", [])),
-            "risks": decision.get("risks", []),
-            "alternatives": decision.get("alternatives", []),
-            "confidence": decision.get("confidence", 0.0),
-            "created_at": datetime.utcnow().isoformat() + "Z",
-        }
-        decision["decision_log"] = log_decision(log_payload)
-        decision["evidence"] = evidence.model_dump()
         decision["computed_leave_time"] = (
             datetime.now() + timedelta(minutes=int(decision.get("leave_in_minutes", 0)))
         ).strftime("%H:%M")

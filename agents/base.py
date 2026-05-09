@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-from bedrock_client import BedrockReasoner
+from llm_provider import LangChainReasoner
 
 
 def safe_json_extract(raw: dict[str, Any], fallback: dict[str, Any]) -> dict[str, Any]:
@@ -17,6 +17,5 @@ def normalize_text(value: str) -> str:
 
 
 class AgentBase:
-    def __init__(self, reasoner: BedrockReasoner | None, model_id: str) -> None:
+    def __init__(self, reasoner: LangChainReasoner | None) -> None:
         self.reasoner = reasoner
-        self.model_id = model_id

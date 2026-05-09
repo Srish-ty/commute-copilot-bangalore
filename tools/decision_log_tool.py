@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from datetime import datetime, timezone
 from typing import Any
@@ -19,10 +20,16 @@ def _client() -> Elasticsearch | None:
 
 
 def log_decision(decision: dict[str, Any]) -> dict[str, Any]:
+    normalized = dict(decision)
+    if isinstance(normalized.get("risks"), list):
+        normalized["risks"] = " | ".join(str(item) for item in normalized["risks"])
+    if isinstance(normalized.get("alternatives"), (list, dict)):
+        normalized["alternatives"] = json.dumps(normalized["alternatives"], ensure_ascii=True)
+
     record = {
-        "id": decision.get("id", str(uuid4())),
-        "created_at": decision.get("created_at", datetime.now(timezone.utc).isoformat()),
-        **decision,
+        "id": normalized.get("id", str(uuid4())),
+        "created_at": normalized.get("created_at", datetime.now(timezone.utc).isoformat()),
+        **normalized,
     }
     client = _client()
     if not client:

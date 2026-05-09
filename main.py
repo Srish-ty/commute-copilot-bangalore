@@ -7,19 +7,37 @@ from agents.route_traffic_agent import RouteTrafficAgent
 from agents.supervisor_agent import SupervisorAgent
 from agents.transit_context_agent import TransitContextAgent
 from agents.weather_agent import WeatherAgent
-from bedrock_client import BedrockReasoner
 from config import load_settings
+from llm_provider import LangChainReasoner
+from orchestration_graph import CommuteCopilotGraphRunner
 
 
-def build_supervisor(use_bedrock: bool) -> SupervisorAgent:
+def build_graph_runner(use_bedrock: bool) -> CommuteCopilotGraphRunner:
     settings = load_settings()
-    reasoner = BedrockReasoner(region_name=settings.aws_region) if use_bedrock else None
-    weather = WeatherAgent(reasoner=reasoner, model_id=settings.bedrock_light_model)
-    route = RouteTrafficAgent(reasoner=reasoner, model_id=settings.bedrock_route_model)
-    transit = TransitContextAgent(reasoner=reasoner, model_id=settings.bedrock_light_model)
-    return SupervisorAgent(
-        reasoner=reasoner,
-        model_id=settings.bedrock_supervisor_model,
+    supervisor_reasoner = None
+    route_reasoner = None
+    light_reasoner = None
+
+    if use_bedrock:
+        supervisor_reasoner = LangChainReasoner(
+            region_name=settings.aws_region,
+            model_id=settings.bedrock_supervisor_model,
+        )
+        route_reasoner = LangChainReasoner(
+            region_name=settings.aws_region,
+            model_id=settings.bedrock_route_model,
+        )
+        light_reasoner = LangChainReasoner(
+            region_name=settings.aws_region,
+            model_id=settings.bedrock_light_model,
+        )
+
+    supervisor = SupervisorAgent(reasoner=supervisor_reasoner)
+    weather = WeatherAgent(reasoner=light_reasoner)
+    route = RouteTrafficAgent(reasoner=route_reasoner)
+    transit = TransitContextAgent(reasoner=light_reasoner)
+    return CommuteCopilotGraphRunner(
+        supervisor=supervisor,
         weather_agent=weather,
         route_traffic_agent=route,
         transit_agent=transit,
@@ -36,8 +54,8 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    supervisor = build_supervisor(use_bedrock=args.use_bedrock)
-    result = supervisor.run(args.query)
+    runner = build_graph_runner(use_bedrock=args.use_bedrock)
+    result = runner.run(args.query)
     print(json.dumps(result, indent=2))
 
 

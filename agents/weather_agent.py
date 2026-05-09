@@ -23,5 +23,5 @@ class WeatherAgent(AgentBase):
             f"Tool weather context: {tool_data}\n"
             "Refine wording if needed but keep numeric values trustworthy."
         )
-        raw = self.reasoner.generate_json(self.model_id, self.SYSTEM_PROMPT, prompt)
+        raw = self.reasoner.generate_json(self.SYSTEM_PROMPT, prompt)
         return safe_json_extract(raw, tool_data)

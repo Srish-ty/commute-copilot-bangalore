@@ -36,5 +36,5 @@ class TransitContextAgent(AgentBase):
             f"Elasticsearch evidence: {context}\n"
             "Summarize transit feasibility and last-mile effort."
         )
-        raw = self.reasoner.generate_json(self.model_id, self.SYSTEM_PROMPT, prompt)
+        raw = self.reasoner.generate_json(self.SYSTEM_PROMPT, prompt)
         return safe_json_extract(raw, fallback)

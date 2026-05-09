@@ -52,5 +52,5 @@ class RouteTrafficAgent(AgentBase):
             f"Elasticsearch evidence: {elastic_hits}\n"
             "Prefer predictable route over shortest route."
         )
-        raw = self.reasoner.generate_json(self.model_id, self.SYSTEM_PROMPT, prompt)
+        raw = self.reasoner.generate_json(self.SYSTEM_PROMPT, prompt)
         return safe_json_extract(raw, fallback)
