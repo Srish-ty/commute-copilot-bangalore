@@ -1,0 +1,20 @@
+[
+  {
+    "id": "crawl-bmtc-peak-note",
+    "title": "BMTC peak-hour buffer",
+    "content": "BMTC buses on central corridors can need an extra 10 to 20 minute buffer during evening peak.",
+    "source_url": "sample://crawler/bmtc-peak-note",
+    "area": "Central Bengaluru",
+    "category": "bmtc",
+    "created_at": "2026-05-09T10:55:40.604273+00:00"
+  },
+  {
+    "id": "crawl-cbd-event-buffer",
+    "title": "CBD event buffer",
+    "content": "When events occur near MG Road, Cubbon Park, or Church Street, prefer metro for predictable arrival.",
+    "source_url": "sample://crawler/cbd-event-buffer",
+    "area": "MG Road",
+    "category": "event",
+    "created_at": "2026-05-09T10:55:40.604273+00:00"
+  }
+]
