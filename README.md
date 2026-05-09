@@ -16,11 +16,11 @@ Hackathon MVP for AWS UG Bengaluru HackNight: a multi-agent commute intelligence
 ```mermaid
 flowchart TD
     User["User commute query"] --> Graph["LangGraph workflow"]
-    Graph --> Parse["Parse query"]
-    Parse --> Weather["Weather Agent"]
-    Weather --> RouteTraffic["Route + Traffic Agent"]
-    RouteTraffic --> Transit["Transit Context Agent"]
-    Transit --> Supervisor["CommuteCopilot Supervisor Agent"]
+    Graph --> Supervisor["CommuteCopilot Supervisor Agent"]
+    Supervisor --> Parse["Parse source, destination, time, preferences"]
+    Supervisor --> Weather["Weather Agent"]
+    Supervisor --> RouteTraffic["Route + Traffic Agent"]
+    Supervisor --> Transit["Transit Context Agent"]
 
     Weather --> OpenMeteo["Open-Meteo API / fallback weather"]
     RouteTraffic --> OSRM["OSRM / sample route data"]
@@ -31,6 +31,9 @@ flowchart TD
     Ingestion --> Embeddings["Jina embeddings"]
     Embeddings --> Elastic
 
+    Weather --> Supervisor
+    RouteTraffic --> Supervisor
+    Transit --> Supervisor
     Supervisor --> Decision["Final recommendation"]
     Decision --> Logs["commute_decision_logs"]
     Logs --> Elastic
@@ -72,6 +75,8 @@ Create `.env` from `.env.example` and fill:
   - `AWS_ACCESS_KEY_ID`
   - `AWS_SECRET_ACCESS_KEY`
   - `AWS_SESSION_TOKEN`
+
+For workshop/demo accounts, `amazon.nova-lite-v1:0` is the safest default for all three Bedrock model variables. Some older Claude model IDs may be retired or unavailable in the event account.
 
 ## Install
 
@@ -151,6 +156,10 @@ For judge-facing demo UI:
    - route reliability/traffic views
 
 You can also use Elastic Agent Builder chat as an external demo interface using `agents/*.md` prompts.
+
+## AgentCore
+
+AgentCore deployment steps are in `docs/agentcore_deploy.md`.
 
 ## Demo
 
