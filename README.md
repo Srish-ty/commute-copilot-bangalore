@@ -15,30 +15,27 @@ Hackathon MVP for AWS UG Bengaluru HackNight: a multi-agent commute intelligence
 
 ```mermaid
 flowchart TD
-    User["User commute query"] --> Graph["LangGraph workflow"]
-    Graph --> Supervisor["CommuteCopilot Supervisor Agent"]
-    Supervisor --> Parse["Parse source, destination, time, preferences"]
+    User["User Query"] --> Supervisor["CommuteCopilot Supervisor Agent"]
+
     Supervisor --> Weather["Weather Agent"]
     Supervisor --> RouteTraffic["Route + Traffic Agent"]
     Supervisor --> Transit["Transit Context Agent"]
+    Supervisor --> Final["Final Commute Recommendation"]
 
-    Weather --> OpenMeteo["Open-Meteo API / fallback weather"]
-    RouteTraffic --> OSRM["OSRM / sample route data"]
-    RouteTraffic --> Elastic["Elasticsearch Serverless"]
+    Weather --> OpenMeteo["Open-Meteo API"]
+    RouteTraffic --> OSRM["OSRM / Sample Route Data"]
+    RouteTraffic --> Elastic["Elasticsearch on Elastic Cloud Serverless"]
     Transit --> Elastic
 
-    Crawler["Crawler + curated sample data"] --> Ingestion["Python ingestion scripts"]
-    Ingestion --> Embeddings["Jina embeddings"]
+    Crawler["Open Crawler / Lightweight Scraper"] --> Ingestion["Python Ingestion + Crawler Scripts"]
+    Ingestion --> Embeddings["Jina Embeddings"]
     Embeddings --> Elastic
 
-    Weather --> Supervisor
-    RouteTraffic --> Supervisor
-    Transit --> Supervisor
-    Supervisor --> Decision["Final recommendation"]
-    Decision --> Logs["commute_decision_logs"]
-    Logs --> Elastic
-    Elastic --> Kibana["Kibana dashboard"]
+    Final --> Logs["Decision Logs in Elasticsearch"]
+    Logs --> Kibana["Kibana Dashboard"]
 ```
+
+The left side is query-time reasoning. The right side is ingestion-time enrichment. The live agent retrieves from Elasticsearch during the Route + Traffic and Transit Context steps, then the Supervisor logs the final recommendation for Kibana.
 
 ## Code Layout
 
