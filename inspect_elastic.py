@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
@@ -9,6 +10,7 @@ from elasticsearch import Elasticsearch
 
 
 INDICES = ["commute_context", "commute_places", "commute_routes", "commute_decision_logs"]
+ROOT = Path(__file__).resolve().parent
 
 
 def without_embedding(doc: dict[str, Any]) -> dict[str, Any]:
@@ -16,7 +18,7 @@ def without_embedding(doc: dict[str, Any]) -> dict[str, Any]:
 
 
 def main() -> None:
-    load_dotenv(dotenv_path=".env")
+    load_dotenv(dotenv_path=ROOT / ".env", override=True)
     client = Elasticsearch(os.getenv("ELASTICSEARCH_URL"), api_key=os.getenv("ELASTICSEARCH_API_KEY"))
     for index in INDICES:
         count = client.count(index=index)["count"]

@@ -2,8 +2,12 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from dotenv import load_dotenv
+
+
+ROOT = Path(__file__).resolve().parent
 
 
 @dataclass(frozen=True)
@@ -21,7 +25,7 @@ class Settings:
 
 
 def load_settings() -> Settings:
-    load_dotenv()
+    load_dotenv(dotenv_path=ROOT / ".env", override=True)
     return Settings(
         aws_region=os.getenv("AWS_REGION", "us-east-1"),
         bedrock_supervisor_model=os.getenv(

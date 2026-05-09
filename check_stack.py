@@ -2,12 +2,16 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 import boto3
 from botocore.exceptions import BotoCoreError, ClientError, NoCredentialsError
 from dotenv import load_dotenv
 from elasticsearch import Elasticsearch
+
+
+ROOT = Path(__file__).resolve().parent
 
 
 def check_elastic() -> dict[str, Any]:
@@ -52,7 +56,7 @@ def check_bedrock() -> dict[str, Any]:
 
 
 def main() -> None:
-    load_dotenv(dotenv_path=".env")
+    load_dotenv(dotenv_path=ROOT / ".env", override=True)
     report = {"elastic": check_elastic(), "bedrock": check_bedrock()}
     print(json.dumps(report, indent=2))
 
