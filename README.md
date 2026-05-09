@@ -151,3 +151,8 @@ For judge-facing demo UI:
    - route reliability/traffic views
 
 You can also use Elastic Agent Builder chat as an external demo interface using `agents/*.md` prompts.
+
+## Demo
+
+<img width="1489" height="678" alt="image" src="https://github.com/user-attachments/assets/9976543a-7f96-46e2-8813-f8085d679316" />
+
