@@ -2,7 +2,7 @@
 
 ## Real-World Impact
 
-Bengaluru commuters often choose between cab, Metro, BMTC, walking, and parking uncertainty under time pressure. RouteWise gives a clear action instead of another raw route list.
+Bengaluru commuters often choose between cab, Metro, BMTC, walking, and parking uncertainty under time pressure. CommuteCopilot gives a clear action instead of another raw route list.
 
 ## Data Effort
 

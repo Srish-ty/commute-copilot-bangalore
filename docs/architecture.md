@@ -1,6 +1,6 @@
 # Architecture
 
-RouteWise Bengaluru is intentionally small: three specialist agents report evidence to one Supervisor Agent, and the Supervisor makes the final commute decision.
+CommuteCopilot Bengaluru is intentionally small: three specialist agents report evidence to one Supervisor Agent, and the Supervisor makes the final commute decision.
 
 ## Runtime Components
 
@@ -15,7 +15,7 @@ No EC2, custom frontend, or normal backend server is required for the MVP.
 
 ```mermaid
 flowchart TD
-    User["User Query"] --> Supervisor["RouteWise Supervisor Agent"]
+    User["User Query"] --> Supervisor["CommuteCopilot Supervisor Agent"]
     Supervisor --> Weather["Weather Agent"]
     Supervisor --> RouteTraffic["Route + Traffic Agent"]
     Supervisor --> Transit["Transit Context Agent"]

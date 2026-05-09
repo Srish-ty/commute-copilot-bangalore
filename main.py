@@ -27,7 +27,7 @@ def build_supervisor(use_bedrock: bool) -> SupervisorAgent:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="RouteWise Bengaluru CLI")
+    parser = argparse.ArgumentParser(description="CommuteCopilot Bengaluru CLI")
     parser.add_argument("query", help="Commute question, e.g. 'I am at Spice Garden and need MG Road by 6 PM'")
     parser.add_argument(
         "--use-bedrock",

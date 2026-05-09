@@ -20,7 +20,7 @@ python ingestion/ingest_sample_data.py
 
 ## Opening Story
 
-Every Bengaluru commute is a multi-variable decision: traffic, Metro, BMTC, rain, parking, last-mile effort, and time pressure. RouteWise turns that uncertainty into an explained recommendation.
+Every Bengaluru commute is a multi-variable decision: traffic, Metro, BMTC, rain, parking, last-mile effort, and time pressure. CommuteCopilot turns that uncertainty into an explained recommendation.
 
 ## Live Query
 
@@ -60,4 +60,4 @@ Show:
 
 ## Closing Line
 
-RouteWise is not trying to replace maps. It sits one level above maps: it explains which commute tradeoff is actually worth taking right now.
+CommuteCopilot is not trying to replace maps. It sits one level above maps: it explains which commute tradeoff is actually worth taking right now.

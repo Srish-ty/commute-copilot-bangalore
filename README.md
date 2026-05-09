@@ -7,14 +7,14 @@ AI-powered multi-agent commute intelligence for Bengaluru, built for AWS UG Beng
 ### Commute Intelligence
 
 Every Bengaluru morning is the same calculation: traffic, BMTC, Metro, parking, weather, school timings, route choice, mode choice, and departure time.
-RouteWise Bengaluru answers it with transparent reasoning grounded in real feeds, curated local context, and Elasticsearch retrieval.
+CommuteCopilot Bengaluru answers it with transparent reasoning grounded in real feeds, curated local context, and Elasticsearch retrieval.
 Example:
 
 > Leave in 18 minutes, take Metro to MG Road, walk the last kilometre. Here is why.
 
 ## What This MVP Builds
 
-RouteWise Bengaluru is a hackathon-ready multi-agent system. It recommends:
+CommuteCopilot Bengaluru is a hackathon-ready multi-agent system. It recommends:
 
 - when to leave, which mode to use
 - which route to prefer, how confident the recommendation is
@@ -24,7 +24,7 @@ RouteWise Bengaluru is a hackathon-ready multi-agent system. It recommends:
 
 ```mermaid
 flowchart TD
-    User["User Query"] --> Supervisor["RouteWise Supervisor Agent"]
+    User["User Query"] --> Supervisor["CommuteCopilot Supervisor Agent"]
 
     Supervisor --> Weather["Weather Agent"]
     Supervisor --> RouteTraffic["Route + Traffic Agent"]

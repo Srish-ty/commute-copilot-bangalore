@@ -14,7 +14,7 @@ from tools.decision_log_tool import log_decision
 
 class SupervisorAgent(AgentBase):
     SYSTEM_PROMPT = (
-        "You are the RouteWise Supervisor Agent. "
+        "You are the Commute-Copilot Supervisor Agent. "
         "Always reason from specialist evidence and return only valid JSON with keys: "
         "leave_in_minutes, recommended_mode, route, reasoning, risks, alternatives, confidence."
     )
